@@ -4,12 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>iLocation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
 <style>
 :root{--blue:#0062FF;--white:#FFF;--card:#F5F5F5;--text:#000;--sub:#888;--danger:#D32F2F}
 ::-webkit-scrollbar{display:none!important;width:0;height:0}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;scrollbar-width:none;-ms-overflow-style:none}
 html,body{overscroll-behavior:none;overflow:hidden;height:100%;height:100dvh}
-body{font-family:'SamsungOne',-apple-system,BlinkMacSystemFont,'Malgun Gothic','맑은 고딕',sans-serif;background:var(--white);color:var(--text);user-select:none;-webkit-user-select:none}
+body{font-family:'Google Sans',-apple-system,BlinkMacSystemFont,'Malgun Gothic','맑은 고딕',sans-serif;background:var(--white);color:var(--text);user-select:none;-webkit-user-select:none}
 .hidden{display:none!important}
 
 #sp{position:fixed;inset:0;background:#fff;z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s ease}
@@ -154,10 +157,10 @@ body{font-family:'SamsungOne',-apple-system,BlinkMacSystemFont,'Malgun Gothic','
 </head>
 <body>
 
-<div id="sp"><img src="logo.png" alt=""><div class="sn">iLocation</div></div>
+<div id="sp"><img src="https://raw.githubusercontent.com/jaewondev27/ilocation-updater/refs/heads/main/logo.png" alt=""><div class="sn">iLocation</div></div>
 
 <div id="st" class="hidden">
-  <div class="st-top"><img src="logo.png" alt=""><div class="sn">iLocation</div></div>
+  <div class="st-top"><img src="https://raw.githubusercontent.com/jaewondev27/ilocation-updater/refs/heads/main/logo.png" alt=""><div class="sn">iLocation</div></div>
   <div class="st-t">사용 유형을 선택해주세요</div>
   <div class="st-cards">
     <div class="st-c" data-r="parent" onclick="pk('parent')"><div class="ci"><svg viewBox="0 0 34 34"><circle cx="17" cy="11" r="6.5" fill="#999"/><path d="M7 29c0-5.5 4.5-10 10-10s10 4.5 10 10" fill="#999"/></svg></div><div class="ct">부모입니다</div></div>
@@ -167,7 +170,7 @@ body{font-family:'SamsungOne',-apple-system,BlinkMacSystemFont,'Malgun Gothic','
 </div>
 
 <div id="lg" class="hidden">
-  <div class="lg-top"><img src="logo.png" alt=""><div class="sn">iLocation</div></div>
+  <div class="lg-top"><img src="https://raw.githubusercontent.com/jaewondev27/ilocation-updater/refs/heads/main/logo.png" alt=""><div class="sn">iLocation</div></div>
   <div class="lg-mid"><div class="lt">로그인</div><input class="li" id="id" placeholder="아이디" autocomplete="off"><input class="li" id="pw" placeholder="비밀번호" type="password"><div class="le" id="er"></div></div>
   <div class="lg-bot"><button class="lb" onclick="dL()">로그인</button><div class="su-link">계정이 없으신가요? <a href="#" onclick="sSU(event)">회원가입</a></div></div>
 </div>
@@ -192,7 +195,7 @@ body{font-family:'SamsungOne',-apple-system,BlinkMacSystemFont,'Malgun Gothic','
       <div class="fm-panel active" id="pan-home">
         <div class="fm-lbl">One UI</div>
         <div class="fm-he">
-          <div class="fm-lo"><img src="logo.png"></div>
+          <div class="fm-lo"><img src="https://raw.githubusercontent.com/jaewondev27/ilocation-updater/refs/heads/main/logo.png"></div>
           <div><div class="fm-ti" id="ht-title">iLocation</div><div class="fm-su" id="ht-sub">위치 수집중</div></div>
         </div>
         <div id="hc"></div>
@@ -210,7 +213,7 @@ body{font-family:'SamsungOne',-apple-system,BlinkMacSystemFont,'Malgun Gothic','
   </div>
 </div>
 
-<div id="more-screen" class="hidden">
+<div id="more-screen">
   <div class="ms-header">
     <button class="ms-back" onclick="closeMore()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
@@ -312,9 +315,9 @@ window.onNativeLocation=function(lat,lon){
 
 async function lF(){try{const r=await fetch(A+'/api/family/list',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me.username,role:me.role})});const d=await r.json();fm=d.family||[];rH();rM2();rMo();uM();}catch(e){}}
 
-function rH(){const c=document.getElementById('hc');const tt=document.getElementById('ht-title');const ss=document.getElementById('ht-sub');if(me.role==='child'){tt.textContent='iLocation';ss.textContent='위치 수집중';}else{tt.textContent='iLocation Parents';ss.textContent='위치 확인중';}const sf=fm.find(m=>m.username===me.username);const ot=fm.filter(m=>m.username!==me.username);let h='';if(sf){h+=`<div class="fmc"><div class="ma">${PS}</div><div class="mn">${sf.name} (나)</div><div class="ms">온라인 <div class="do on"></div></div></div>`;}if(ot.length===0){if(me.role==='parent')h+=`<div class="em">자녀가 없습니다.</div>`;}else{ot.forEach(m=>{const on=m.lat&&m.lon;const st=on?'온라인':'오프라인';const dc=on?'on':'of';const tg=m.role==='child'?'(자녀)':'(부모)';h+=`<div class="fmc"><div class="ma">${PS}</div><div class="mn">${m.name} ${tg}</div><div class="ms">${st} <div class="do ${dc}"></div></div></div>`;});}c.innerHTML=h;}
+function rH(){const c=document.getElementById('hc');const tt=document.getElementById('ht-title');const ss=document.getElementById('ht-sub');if(me.role==='child'){tt.textContent='iLocation';ss.textContent='위치 수집중';}else{tt.textContent='iLocation Parents';ss.textContent='위치 확인중';}const sf=fm.find(m=>m.username===me.username);const ot=fm.filter(m=>m.username!==me.username);let h='';const now=Math.floor(Date.now()/1000);if(sf){const up=sf.updated_at||sf.last_updated||0;const on=sf.lat&&sf.lon&&(now-up<300);const st=on?'온라인':'오프라인';const dc=on?'on':'of';h+=`<div class="fmc"><div class="ma">${PS}</div><div class="mn">${sf.name} (나)</div><div class="ms">${st} <div class="do ${dc}"></div></div></div>`;}if(ot.length===0){if(me.role==='parent')h+=`<div class="em">자녀가 없습니다.</div>`;}else{ot.forEach(m=>{const up=m.updated_at||m.last_updated||0;const on=m.lat&&m.lon&&(now-up<300);const st=on?'온라인':'오프라인';const dc=on?'on':'of';const tg=m.role==='child'?'(자녀)':'(부모)';h+=`<div class="fmc"><div class="ma">${PS}</div><div class="mn">${m.name} ${tg}</div><div class="ms">${st} <div class="do ${dc}"></div></div></div>`;});}c.innerHTML=h;}
 
-function rM2(){const l=document.getElementById('mc2');if(fm.length===0){l.innerHTML='<div class="em">가족 구성원이 없습니다.</div>';return;}let h='';fm.forEach(m=>{const is=m.username===me.username;const tg=is?'(나)':(m.role==='child'?'(자녀)':'(부모)');const on=m.lat&&m.lon;const st=on?'온라인':'오프라인';const dc=on?'on':'of';h+=`<div class="fmc"><div class="ma">${PS}</div><div class="mn">${m.name} ${tg}</div><div class="ms">${st} <div class="do ${dc}"></div></div></div>`;});l.innerHTML=h;}
+function rM2(){const l=document.getElementById('mc2');if(fm.length===0){l.innerHTML='<div class="em">가족 구성원이 없습니다.</div>';return;}let h='';const now=Math.floor(Date.now()/1000);fm.forEach(m=>{const is=m.username===me.username;const tg=is?'(나)':(m.role==='child'?'(자녀)':'(부모)');const up=m.updated_at||m.last_updated||0;const on=m.lat&&m.lon&&(now-up<300);const st=on?'온라인':'오프라인';const dc=on?'on':'of';h+=`<div class="fmc"><div class="ma">${PS}</div><div class="mn">${m.name} ${tg}</div><div class="ms">${st} <div class="do ${dc}"></div></div></div>`;});l.innerHTML=h;}
 
 function rMo(){const l=document.getElementById('mr2');let h='';if(me.role==='parent'){h+=`<button class="fmb" onclick="sG()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>연결 코드 발급</span></button>`;}else{h+=`<button class="fmb" onclick="sI()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg><span>부모와 연결하기</span></button>`;}h+=`<button class="fmb da" onclick="doLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>로그아웃</span></button>`;l.innerHTML=h;}
 
@@ -438,7 +441,7 @@ function uM(){
   // 자녀인 경우 내 위치를 목록에 포함
   if(myLat!==null&&myLon!==null&&me){
     const selfIdx=list.findIndex(m=>m.username===me.username);
-    const selfData={username:me.username,name:me.name||'나',role:me.role,lat:myLat,lon:myLon,last_updated:Math.floor(Date.now()/1000)};
+    const selfData={username:me.username,name:me.name||'나',role:me.role,lat:myLat,lon:myLon,last_updated:Math.floor(Date.now()/1000),updated_at:Math.floor(Date.now()/1000)};
     if(selfIdx>=0)list[selfIdx]=selfData;
     else list=[selfData,...list];
   }
