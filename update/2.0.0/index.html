@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>iLocation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#0062FF;--white:#FFF;--card:#F5F5F5;--text:#000;--sub:#888;--danger:#D32F2F}
+::-webkit-scrollbar{display:none!important;width:0;height:0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;scrollbar-width:none;-ms-overflow-style:none}
+html,body{overscroll-behavior:none;overflow:hidden;height:100%;height:100dvh}
+body{font-family:'Google Sans',-apple-system,BlinkMacSystemFont,'Malgun Gothic','맑은 고딕',sans-serif;background:var(--white);color:var(--text);user-select:none;-webkit-user-select:none}
+.hidden{display:none!important}
+
+#sp{position:fixed;inset:0;background:#fff;z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s ease}
+#sp.out{opacity:0;pointer-events:none}
+#sp img{width:86px;height:86px;margin-bottom:8px;animation:spB .8s cubic-bezier(.34,1.56,.64,1)}
+#sp .sn{font-size:28px;font-weight:700;animation:spF .6s ease .3s both}
+@keyframes spB{0%{opacity:0;transform:scale(.5)}100%{opacity:1;transform:scale(1)}}
+@keyframes spF{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+#st{position:fixed;inset:0;background:#fff;z-index:9000;display:flex;flex-direction:column;align-items:center}
+.st-top{padding-top:90px;text-align:center}
+.st-top img{width:80px;height:80px;margin:0 auto 6px}
+.st-top .sn{font-size:26px;font-weight:700}
+.st-t{font-size:24px;font-weight:700;margin-top:75px;letter-spacing:-.3px}
+.st-cards{width:calc(100% - 48px);max-width:340px;margin-top:30px;display:flex;flex-direction:column;gap:12px}
+.st-c{background:var(--card);border-radius:20px;padding:20px 22px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);border:2px solid transparent;animation:cI .4s ease both}
+.st-c:nth-child(2){animation-delay:.08s}
+@keyframes cI{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+.st-c:active{transform:scale(.96)}
+.st-c.s{border-color:var(--blue);background:#E8F0FE}
+.st-c .ci{width:38px;height:38px;flex-shrink:0}
+.st-c .ci svg{width:100%;height:100%}
+.st-c .ct{font-size:18px;font-weight:600}
+.st-btn{margin-top:auto;margin-bottom:50px;width:calc(100% - 48px);max-width:340px}
+.bb{width:100%;height:58px;border-radius:29px;background:var(--blue);color:#fff;border:none;font-size:21px;font-weight:700;cursor:pointer;transition:all .15s}
+.bb:disabled{background:#CCC}
+.bb:active:not(:disabled){transform:scale(.97);opacity:.9}
+
+#lg{position:fixed;inset:0;background:#fff;z-index:8000;display:flex;flex-direction:column;align-items:center}
+.lg-top{margin-top:70px;text-align:center}
+.lg-top img{width:80px;height:80px;margin:0 auto 4px}
+.lg-top .sn{font-size:26px;font-weight:700}
+.lg-mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;padding:0 28px}
+.lg-mid .lt{font-size:28px;font-weight:700;align-self:flex-start;margin-bottom:28px}
+.li{width:100%;height:54px;border-radius:27px;border:2px solid #DDD;padding:0 22px;font-size:18px;outline:none;background:#fff;transition:border-color .2s,transform .15s;margin-bottom:10px}
+.li:focus{border-color:var(--blue);transform:scale(1.01)}
+.li::placeholder{color:#B8B8B8}
+.le{color:var(--danger);font-size:14px;margin-top:4px;min-height:16px;text-align:center;width:100%}
+.lg-bot{width:100%;padding:0 28px;padding-bottom:60px;display:flex;flex-direction:column;align-items:center}
+.lb{width:200px;height:54px;border-radius:27px;background:var(--blue);color:#fff;border:none;font-size:20px;font-weight:700;cursor:pointer;transition:all .15s}
+.lb:active{transform:scale(.96);opacity:.9}
+.su-link{margin-top:16px;font-size:14px;color:var(--sub)}
+.su-link a{color:var(--blue);text-decoration:none;font-weight:600}
+
+#su{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:8500;display:flex;align-items:flex-end;justify-content:center}
+#su .sc{background:#fff;width:100%;max-height:85vh;border-radius:22px 22px 0 0;padding:22px 22px 40px;padding-bottom:calc(40px + env(safe-area-inset-bottom,0px));overflow-y:auto;animation:sU .3s cubic-bezier(.4,0,.2,1)}
+@keyframes sU{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sh2{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.sh2 .st2{font-size:20px;font-weight:700}
+.sh2 .sx{width:32px;height:32px;border-radius:50%;background:var(--card);border:none;font-size:16px;cursor:pointer}
+.sh2 .sx:active{opacity:.6}
+.sf{width:100%;height:50px;border-radius:25px;border:1.5px solid #DDD;padding:0 18px;font-size:17px;outline:none;margin-bottom:10px;transition:border-color .2s}
+.sf:focus{border-color:var(--blue)}
+.sf::placeholder{color:#B8B8B8}
+.ir{display:flex;gap:8px}
+.ir .sf{flex:1}
+.ick{height:50px;padding:0 16px;border-radius:25px;background:var(--blue);color:#fff;border:none;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.ick:active{opacity:.7}
+.im{font-size:14px;margin-bottom:8px;padding-left:4px;min-height:16px}
+.im.ok{color:#00A650}.im.no{color:var(--danger)}
+.ssb{width:100%;height:52px;border-radius:26px;background:var(--blue);color:#fff;border:none;font-size:17px;font-weight:600;cursor:pointer;margin-top:4px}
+.ssb:active{opacity:.8}
+.se{color:var(--danger);font-size:14px;margin-top:8px;text-align:center;min-height:16px}
+
+#ap{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column}
+#mw{flex:1;position:relative;overflow:hidden}
+#mf{position:absolute;width:100%;height:130%;top:0;left:0;border:none;transform:translateY(-20%)}
+
+#fmodal{position:absolute;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom, 0px));z-index:200;display:flex;flex-direction:column;background:var(--white);border-radius:28px;box-shadow:0 -4px 24px rgba(0,0,0,.08);overflow:hidden;transition:height .35s cubic-bezier(.4,0,.2,1)}
+
+#fhandle{width:100%;display:flex;justify-content:center;padding:12px 0 10px;cursor:grab;touch-action:none;flex-shrink:0}
+#fhandle .bar{width:40px;height:5px;border-radius:3px;background:rgba(0,0,0,.15)}
+
+#fcontent{flex:1;position:relative;overflow:hidden;min-height:0}
+
+.fm-panel{position:absolute;top:0;left:0;right:0;bottom:0;padding:8px 18px 12px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.fm-panel{display:none}
+.fm-panel.active{display:block;animation:pI .3s ease}
+@keyframes pI{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+.fm-lbl{font-size:20px;font-weight:600;padding:4px 0 10px;letter-spacing:-.3px}
+.fm-he{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.fm-lo{width:42px;height:42px;flex-shrink:0;border-radius:12px;overflow:hidden}
+.fm-lo img{width:100%;height:100%}
+.fm-ti{font-size:16px;font-weight:700}
+.fm-su{font-size:13px;color:var(--blue);font-weight:500}
+
+.fmc{background:var(--card);border-radius:16px;padding:16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:transform .15s}
+.fmc:active{transform:scale(.98)}
+.fmc .ma{width:36px;height:36px;flex-shrink:0}
+.fmc .ma svg{width:100%;height:100%}
+.fmc .mn{font-size:16px;font-weight:600}
+.fmc .ms{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500}
+.fmc .do{width:9px;height:9px;border-radius:50%}
+.fmc .do.on{background:var(--blue)}
+.fmc .do.of{background:var(--danger)}
+.em{text-align:center;color:var(--sub);font-size:14px;padding:18px 0}
+
+.fm-tabs{display:flex;border-top:1px solid #F0F0F0;flex-shrink:0;height:68px;background:var(--white)}
+.ft{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#999;cursor:pointer;transition:color .2s}
+.ft:active{opacity:.6}
+.ft.a{color:var(--text)}
+.ft svg{width:26px;height:26px}
+.ft span{font-size:12px;font-weight:500}
+
+.fmb{display:flex;align-items:center;gap:14px;padding:18px 16px;background:var(--card);border-radius:14px;margin-bottom:8px;cursor:pointer;border:none;width:100%;text-align:left;font-size:16px;font-weight:500}
+.fmb:active{opacity:.7}
+.fmb svg{width:24px;height:24px;color:var(--blue)}
+.fmb.da{color:var(--danger)}.fmb.da svg{color:var(--danger)}
+
+#more-screen{position:fixed;inset:0;background:var(--white);z-index:10000;display:flex;flex-direction:column;visibility:hidden;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1), visibility .35s}
+#more-screen.open{visibility:visible;transform:translateX(0)}
+.ms-header{display:flex;align-items:center;padding:16px 20px;padding-top:calc(16px + env(safe-area-inset-top,0px));border-bottom:1px solid #F0F0F0;background:var(--white)}
+.ms-back{width:40px;height:40px;border:none;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-10px;margin-right:8px}
+.ms-back svg{width:28px;height:28px;color:var(--text)}
+.ms-back:active{opacity:.6}
+.ms-title{font-size:22px;font-weight:700}
+.ms-content{flex:1;padding:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));overflow-y:auto}
+
+/* 앱정보 모달 */
+#appinfo-screen{position:fixed;inset:0;background:var(--white);z-index:10005;display:flex;flex-direction:column;visibility:hidden;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1), visibility .35s}
+#appinfo-screen.open{visibility:visible;transform:translateX(0)}
+
+/* 이동기록 모달 */
+#history-screen{position:fixed;inset:0;background:#fff;z-index:10010;display:flex;flex-direction:column;visibility:hidden;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1), visibility .35s}
+#history-screen.open{visibility:visible;transform:translateX(0)}
+.hist-back{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,0.1);z-index:10;cursor:pointer}
+.hist-back svg{width:24px;height:24px;color:var(--text)}
+#hist-iframe{flex:1;width:100%;border:none}
+.hist-bottom{background:#fff;padding:16px 20px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 20px rgba(0,0,0,0.08);z-index:10;border-radius:24px 24px 0 0}
+.hist-btn{width:40px;height:40px;border:none;background:var(--card);border-radius:50%;font-size:16px;cursor:pointer}
+#hist-date-input{border:none;font-size:18px;font-weight:700;outline:none;background:transparent;text-align:center;font-family:inherit}
+#hist-info{text-align:center;font-size:14px;color:var(--sub);margin-top:12px;font-weight:500;min-height:20px}
+
+/* 범용 모달 토스트 (우선순위 최고) */
+#cm{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100000;display:flex;align-items:flex-end;justify-content:center}
+#cm .cb{background:#fff;width:100%;border-radius:22px 22px 0 0;padding:22px 22px 40px;padding-bottom:calc(40px + env(safe-area-inset-bottom,0px));animation:sU .3s cubic-bezier(.4,0,.2,1)}
+.cch{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.cch .cct{font-size:18px;font-weight:700}
+.cch .ccx{width:32px;height:32px;border-radius:50%;background:var(--card);border:none;font-size:14px;cursor:pointer}
+.cch .ccx:active{opacity:.6}
+.cbx{text-align:center;padding:26px 18px;background:var(--card);border-radius:16px;margin-bottom:14px}
+.cnm{font-size:32px;font-weight:700;letter-spacing:7px;color:var(--blue)}
+.cno{font-size:13px;color:var(--sub);margin-top:8px}
+.ci2{width:100%;height:54px;border-radius:27px;border:2px solid #DDD;padding:0 18px;font-size:22px;text-align:center;letter-spacing:5px;outline:none}
+.ci2:focus{border-color:var(--blue)}
+.cg{width:100%;height:50px;border-radius:25px;background:var(--blue);color:#fff;border:none;font-size:16px;font-weight:600;cursor:pointer;margin-top:12px}
+.cg:active{opacity:.8}
+
+.toast{position:fixed;bottom:220px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(0,0,0,.75);color:#fff;padding:12px 24px;border-radius:24px;font-size:15px;z-index:100000;opacity:0;transition:all .3s ease;pointer-events:none}
+.toast.sh{opacity:1;transform:translateX(-50%) translateY(0)}
+@keyframes sp{to{transform:rotate(360deg)}}
+.spn{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+</style>
+</head>
+<body>
+
+<div id="sp"><img src="https://raw.githubusercontent.com/jaewondev27/ilocation-updater/refs/heads/main/logo.png" alt=""><div class="sn">iLocation</div></div>
+
+<div id="st" class="hidden">
+  <div class="st-top"><img src="https://raw.githubusercontent.com/jaewondev27/ilocation-updater/refs/heads/main/logo.png" alt=""><div class="sn">iLocation</div></div>
+  <div class="st-t">사용 유형을 선택해주세요</div>
+  <div class="st-cards">
+    <div class="st-c" data-r="parent" onclick="pk('parent')"><div class="ci"><svg viewBox="0 0 34 34"><circle cx="17" cy="11" r="6.5" fill="#999"/><path d="M7 29c0-5.5 4.5-10 10-10s10 4.5 10 10" fill="#999"/></svg></div><div class="ct">부모입니다</div></div>
+    <div class="st-c" data-r="child" onclick="pk('child')"><div class="ci"><svg viewBox="0 0 34 34"><circle cx="17" cy="11" r="6.5" fill="#999"/><path d="M7 29c0-5.5 4.5-10 10-10s10 4.5 10 10" fill="#999"/></svg></div><div class="ct">자녀입니다</div></div>
+  </div>
+  <div class="st-btn"><button class="bb" id="nx" disabled onclick="gl()">다음</button></div>
+</div>
+
+<div id="lg" class="hidden">
+  <div class="lg-top"><img src="https://raw.githubusercontent.com/jaewondev27/ilocation-updater/refs/heads/main/logo.png" alt=""><div class="sn">iLocation</div></div>
+  <div class="lg-mid"><div class="lt">로그인</div><input class="li" id="id" placeholder="아이디" autocomplete="off"><input class="li" id="pw" placeholder="비밀번호" type="password"><div class="le" id="er"></div></div>
+  <div class="lg-bot"><button class="lb" onclick="dL()">로그인</button><div class="su-link">계정이 없으신가요? <a href="#" onclick="sSU(event)">회원가입</a></div></div>
+</div>
+
+<div id="su" class="hidden">
+  <div class="sc">
+    <div class="sh2"><div class="st2">회원가입</div><button class="sx" onclick="hSU()">✕</button></div>
+    <div class="ir"><input class="sf" id="si" placeholder="아이디" autocomplete="off"><button class="ick" onclick="cI()">중복확인</button></div>
+    <div class="im" id="im"></div>
+    <input class="sf" id="sp2" placeholder="비밀번호" type="password"><input class="sf" id="s2" placeholder="비밀번호 확인" type="password"><input class="sf" id="sn" placeholder="이름">
+    <button class="ssb" onclick="dSU()">회원가입</button><div class="se" id="se"></div>
+  </div>
+</div>
+
+<div id="ap" class="hidden">
+  <div id="mw"><iframe id="mf" src="about:blank"></iframe></div>
+  
+  <div id="fmodal">
+    <div id="fhandle"><div class="bar"></div></div>
+    
+    <div id="fcontent">
+      <div class="fm-panel active" id="pan-home">
+        <div class="fm-lbl">One UI</div>
+        <div class="fm-he">
+          <div class="fm-lo"><img src="https://raw.githubusercontent.com/jaewondev27/ilocation-updater/refs/heads/main/logo.png"></div>
+          <div><div class="fm-ti" id="ht-title">iLocation</div><div class="fm-su" id="ht-sub">위치 수집중</div></div>
+        </div>
+        <div id="hc"></div>
+      </div>
+      <div class="fm-panel" id="pan-members">
+        <div class="fm-lbl">맴버</div>
+        <div id="mc2"></div>
+      </div>
+
+      <div class="fm-panel" id="pan-profile">
+        <div class="fm-lbl" style="display:flex; align-items:center; gap:8px;">
+            <button onclick="goBackFromProfile()" style="background:var(--card);border:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:18px;height:18px;"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <span>프로필</span>
+        </div>
+        <div style="padding: 10px 4px;">
+            <div class="fm-he" style="margin-bottom:16px;">
+                <div class="fm-lo" style="width:50px;height:50px;border-radius:16px;"><img src="https://raw.githubusercontent.com/jaewondev27/ilocation-updater/refs/heads/main/logo.png"></div>
+                <div>
+                    <div id="prof-name" style="font-size:20px;font-weight:700;">-</div>
+                    <div id="prof-role" style="font-size:13px;color:var(--blue);font-weight:500;">(자녀)</div>
+                </div>
+            </div>
+            <div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:12px;">
+                <div style="font-size:12px;color:var(--sub);margin-bottom:4px;font-weight:600;">최근 업데이트</div>
+                <div id="prof-time" style="font-size:15px;font-weight:600;margin-bottom:14px;">-</div>
+                <div style="font-size:12px;color:var(--sub);margin-bottom:4px;font-weight:600;">현재 위치</div>
+                <div id="prof-addr" style="font-size:15px;font-weight:600;margin-bottom:4px;word-break:keep-all;">-</div>
+                <div id="prof-coords" style="font-size:12px;color:var(--sub);">좌표: -</div>
+            </div>
+            <button id="prof-go" class="cg" style="height:52px;font-size:17px;margin-top:0;">위치로 이동</button>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+                <button class="cg" style="flex:1;background:#E8F0FE;color:var(--blue);height:52px;font-size:16px;margin-top:0;" onclick="openHistory('all')">전체 경로</button>
+                <button class="cg" style="flex:1;background:#E8F0FE;color:var(--blue);height:52px;font-size:16px;margin-top:0;" onclick="openHistory('auto')">자동 감지 경로</button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fm-tabs">
+      <div class="ft a" data-t="home" onclick="goTab('home')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L3 10.5V21h6v-6h6v6h6V10.5z"/></svg><span>홈</span></div>
+      <div class="ft" data-t="members" onclick="goTab('members')"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>맴버</span></div>
+      <div class="ft" data-t="more" onclick="goTab('more')"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18" cy="12" r="1.5"/></svg><span>더보기</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="more-screen">
+  <div class="ms-header">
+    <button class="ms-back" onclick="closeMore()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="ms-title">더보기</div>
+  </div>
+  <div class="ms-content" id="mr2"></div>
+</div>
+
+<div id="appinfo-screen">
+  <div class="ms-header">
+    <button class="ms-back" onclick="closeAppInfo()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="ms-title">앱 정보</div>
+  </div>
+  <div class="ms-content" style="display:flex; flex-direction:column; align-items:center; padding-top:40px;">
+    <img src="https://raw.githubusercontent.com/jaewondev27/ilocation-updater/refs/heads/main/logo.png" style="width:100px;height:100px;border-radius:24px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+    <div style="font-size:24px;font-weight:700;">iLocation</div>
+    <div style="font-size:15px;color:var(--sub);margin-top:4px;margin-bottom:30px;">버전 1.0.0</div>
+    <button class="bb" style="width:200px;height:50px;font-size:16px;" onclick="toast('현재 최신 버전을 사용 중입니다.')">업데이트 확인</button>
+  </div>
+</div>
+
+<div id="history-screen">
+    <button class="hist-back" onclick="closeHistory()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <iframe id="hist-iframe" src="about:blank"></iframe>
+    <div class="hist-bottom">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <button class="hist-btn" onclick="changeHistDate(-1)">◀</button>
+            <input type="date" id="hist-date-input" onchange="loadHistoryMap()">
+            <button class="hist-btn" onclick="changeHistDate(1)">▶</button>
+        </div>
+        <div id="hist-info">경로를 선택하면 시간이 표시됩니다.</div>
+    </div>
+</div>
+
+<div id="cm" class="hidden"><div class="cb"><div class="cch"><div class="cct" id="cct">코드</div><button class="ccx" onclick="cC()">✕</button></div><div id="ccv"></div></div></div>
+<div class="toast" id="to"></div>
+
+<script>
+const A='https://jaewondev7.pythonanywhere.com';
+let me=null,ro=null,fm=[],curTab='home',prevTab='home',locInterval=null,myLat=null,myLon=null;
+let centerTargetUser=null, randChildPicked=false;
+const PS='<svg viewBox="0 0 34 34"><circle cx="17" cy="11" r="6.5" fill="#999"/><path d="M7 29c0-5.5 4.5-10 10-10s10 4.5 10 10" fill="#999"/></svg>';
+
+// QR 코드 연동 검사
+const urlParams = new URLSearchParams(window.location.search);
+const scanCode = urlParams.get('code');
+if(scanCode) sessionStorage.setItem('pending_pair_code', scanCode);
+
+window.addEventListener('message', e => {
+  if (e.data) {
+      if (e.data.type === 'MAP_LOADED') uM();
+      if (e.data.type === 'HIST_INFO') {
+          const hi = document.getElementById('hist-info');
+          hi.textContent = e.data.text;
+          hi.style.color = e.data.color || 'var(--text)';
+      }
+  }
+});
+
+function saveLogin(u){try{localStorage.setItem('iloc_user',JSON.stringify(u));}catch(e){}}
+function getLogin(){try{return JSON.parse(localStorage.getItem('iloc_user'));}catch(e){return null;}}
+function clearLogin(){try{localStorage.removeItem('iloc_user');}catch(e){}}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const s=getLogin();
+  if(s){me=s;ro=s.role;document.getElementById('sp').classList.add('out');setTimeout(()=>{document.getElementById('sp').classList.add('hidden');document.getElementById('st').classList.add('hidden');document.getElementById('lg').classList.add('hidden');eA();},500);return;}
+  setTimeout(()=>{const sp=document.getElementById('sp');sp.classList.add('out');setTimeout(()=>{sp.classList.add('hidden');document.getElementById('st').classList.remove('hidden');},500);},1400);
+  document.getElementById('pw').addEventListener('keydown',e=>{if(e.key==='Enter')dL();});
+});
+
+function pk(r){ro=r;document.querySelectorAll('.st-c').forEach(c=>c.classList.toggle('s',c.dataset.r===r));document.getElementById('nx').disabled=false;}
+function gl(){document.getElementById('st').classList.add('hidden');document.getElementById('lg').classList.remove('hidden');document.getElementById('id').focus();}
+function sSU(e){e.preventDefault();document.getElementById('su').classList.remove('hidden');document.getElementById('si').focus();}
+function hSU(){document.getElementById('su').classList.add('hidden');['se','im','si','sp2','s2','sn'].forEach(i=>{const el=document.getElementById(i);if(el.tagName==='INPUT')el.value='';else el.textContent='';});iO=false;}
+let iO=false;
+async function cI(){const id=document.getElementById('si').value.trim(),m=document.getElementById('im');if(!id){m.textContent='아이디를 입력하세요.';m.className='im no';return;}try{const r=await fetch(A+'/api/auth/check_id',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:id})});const d=await r.json();if(d.available){m.textContent='사용 가능합니다.';m.className='im ok';iO=true;}else{m.textContent='이미 사용 중입니다.';m.className='im no';iO=false;}}catch{m.textContent='오류';m.className='im no';}}
+async function dSU(){const id=document.getElementById('si').value.trim(),pw=document.getElementById('sp2').value,p2=document.getElementById('s2').value,nm=document.getElementById('sn').value.trim(),er=document.getElementById('se');if(!id||!pw||!nm){er.textContent='모든 필드를 입력하세요.';return;}if(!iO){er.textContent='중복확인을 해주세요.';return;}if(pw!==p2){er.textContent='비밀번호가 다릅니다.';return;}try{const r=await fetch(A+'/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:id,password:pw,name:nm,role:ro})});const d=await r.json();if(d.status==='success'){hSU();document.getElementById('id').value=id;document.getElementById('pw').value=pw;dL();}else{er.textContent=d.error||'실패';}}catch{er.textContent='네트워크 오류';}}
+
+async function dL(){const id=document.getElementById('id').value.trim(),pw=document.getElementById('pw').value,er=document.getElementById('er');if(!id||!pw){er.textContent='아이디와 비밀번호를 입력하세요.';return;}try{const r=await fetch(A+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:id,password:pw})});const d=await r.json();if(d.status==='success'){me=d.user;if(me.role!==ro){er.textContent='역할이 다릅니다.';return;}saveLogin(me);eA();}else{er.textContent=d.error||'로그인 실패';}}catch{er.textContent='네트워크 오류';}}
+
+function eA(){
+  document.getElementById('lg').classList.add('hidden');
+  document.getElementById('ap').classList.remove('hidden');
+  
+  // 로그인 성공 직후 보류된 코드가 있으면 자동 연결 시도
+  const pendingCode = sessionStorage.getItem('pending_pair_code');
+  if (pendingCode && me.role === 'child') {
+      sessionStorage.removeItem('pending_pair_code');
+      setTimeout(() => { sCChildWithCode(pendingCode); }, 1500);
+  }
+
+  if(typeof AndroidInterface!=='undefined'){
+    if(AndroidInterface.setIsChild) AndroidInterface.setIsChild(me.role==='child');
+  }
+  if(me.role==='child'){
+    rP(function(){ startLocUpdate(); });
+  }else{
+    if(typeof AndroidInterface!=='undefined'){
+      if(AndroidInterface.stopNativeLocationSync)try{AndroidInterface.stopNativeLocationSync();}catch(e){}
+      if(AndroidInterface.stopTracking)try{AndroidInterface.stopTracking();}catch(e){}
+    }
+    if(!locInterval) locInterval = setInterval(()=>{ lF(); }, 10000);
+  }
+  lF();lM();
+  setTimeout(()=>{if(!window._sheetInit){window._sheetInit=true;initSheet();}},800);
+}
+
+function rP(cb){
+  if(typeof AndroidInterface!=='undefined'&&AndroidInterface.requestPermissions) AndroidInterface.requestPermissions();
+  if(typeof AndroidInterface!=='undefined'&&AndroidInterface.hasLocationPermission){
+    if(AndroidInterface.hasLocationPermission()){ if(cb)cb(); return; }
+  }
+  if('geolocation'in navigator)navigator.geolocation.getCurrentPosition(()=>{if(cb)cb();},()=>{if(cb)cb();});
+  if('Notification'in window)Notification.requestPermission();
+}
+
+function startLocUpdate(){
+  if(locInterval)return;
+  if(typeof AndroidInterface!=='undefined'&&AndroidInterface.startNativeLocationSync&&me){
+    try{AndroidInterface.startNativeLocationSync(me.username);}catch(e){}
+  }
+  locInterval=setInterval(()=>{uM();},10000);
+}
+
+window.onNativeLocation=function(lat,lon){
+  myLat=lat;myLon=lon;
+  uM();
+};
+
+async function lF(){try{const r=await fetch(A+'/api/family/list',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me.username,role:me.role})});const d=await r.json();fm=d.family||[];rH();rM2();rMo();uM();}catch(e){}}
+
+function rH(){const c=document.getElementById('hc');const tt=document.getElementById('ht-title');const ss=document.getElementById('ht-sub');if(me.role==='child'){tt.textContent='iLocation';ss.textContent='위치 수집중';}else{tt.textContent='iLocation Parents';ss.textContent='위치 확인중';}const sf=fm.find(m=>m.username===me.username);const ot=fm.filter(m=>m.username!==me.username);let h='';const now=Math.floor(Date.now()/1000);if(sf){const up=sf.updated_at||sf.last_updated||0;const on=sf.lat&&sf.lon&&(now-up<300);const st=on?'온라인':'오프라인';const dc=on?'on':'of';h+=`<div class="fmc" ${sf.role==='child'?`onclick="showProfile('${sf.username}')"`:''}><div class="ma">${PS}</div><div class="mn">${sf.name} (나)</div><div class="ms">${st} <div class="do ${dc}"></div></div></div>`;}if(ot.length===0){if(me.role==='parent')h+=`<div class="em">자녀가 없습니다.</div>`;}else{ot.forEach(m=>{const up=m.updated_at||m.last_updated||0;const on=m.lat&&m.lon&&(now-up<300);const st=on?'온라인':'오프라인';const dc=on?'on':'of';const tg=m.role==='child'?'(자녀)':'(부모)';const ca=m.role==='parent'?'':`onclick="showProfile('${m.username}')"`;h+=`<div class="fmc" ${ca}><div class="ma">${PS}</div><div class="mn">${m.name} ${tg}</div><div class="ms">${st} <div class="do ${dc}"></div></div></div>`;});}c.innerHTML=h;}
+
+function rM2(){const l=document.getElementById('mc2');if(fm.length===0){l.innerHTML='<div class="em">가족 구성원이 없습니다.</div>';return;}let h='';const now=Math.floor(Date.now()/1000);fm.forEach(m=>{const is=m.username===me.username;const tg=is?'(나)':(m.role==='child'?'(자녀)':'(부모)');const up=m.updated_at||m.last_updated||0;const on=m.lat&&m.lon&&(now-up<300);const st=on?'온라인':'오프라인';const dc=on?'on':'of';const ca=m.role==='parent'?'':`onclick="showProfile('${m.username}')"`;h+=`<div class="fmc" ${ca}><div class="ma">${PS}</div><div class="mn">${m.name} ${tg}</div><div class="ms">${st} <div class="do ${dc}"></div></div></div>`;});l.innerHTML=h;}
+
+function rMo(){const l=document.getElementById('mr2');let h='';if(me.role==='parent'){h+=`<div id="code-wrap" style="background:var(--card); border-radius:14px; margin-bottom:8px; overflow:hidden; transition:max-height 0.35s ease; max-height:60px;"><button class="fmb" style="margin-bottom:0; background:transparent;" onclick="sG()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></svg><span>연결 코드 발급</span></button><div id="code-exp" style="padding:0 16px 16px; text-align:center;"></div></div>`;}else{h+=`<div id="child-code-wrap" style="background:var(--card); border-radius:14px; margin-bottom:8px; overflow:hidden; transition:max-height 0.35s ease; max-height:60px;"><button class="fmb" style="margin-bottom:0; background:transparent;" onclick="openChildCode()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg><span>부모와 연결하기</span></button><div id="child-code-exp" style="padding:0 16px 16px; text-align:center;"><input class="ci2" id="ci-child" placeholder="6자리 코드" maxlength="6" inputmode="numeric" style="height:48px; font-size:20px; border-radius:24px;"><div style="display:flex; gap:8px; margin-top:10px;"><button class="cg" onclick="closeChildCode()" style="background:#CCC; color:#000; margin-top:0; height:46px; flex:1;">취소</button><button class="cg" onclick="sCChild()" style="margin-top:0; height:46px; flex:1;">연결하기</button></div></div></div>`;}
+h+=`<button class="fmb" onclick="openAppInfo()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><span>앱 정보</span></button>`;
+h+=`<button class="fmb da" onclick="doLogout()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg><span>로그아웃</span></button>`;l.innerHTML=h;}
+
+function doLogout(){
+  clearLogin();
+  if(locInterval){clearInterval(locInterval);locInterval=null;}
+  if(typeof AndroidInterface!=='undefined'){
+    if(AndroidInterface.setIsChild)AndroidInterface.setIsChild(false);
+    if(AndroidInterface.stopNativeLocationSync)try{AndroidInterface.stopNativeLocationSync();}catch(e){}
+    if(AndroidInterface.stopTracking)try{AndroidInterface.stopTracking();}catch(e){}
+  }
+  me=null;fm=[]; centerTargetUser=null; randChildPicked=false;
+  document.getElementById('ap').classList.add('hidden');
+  document.getElementById('lg').classList.remove('hidden');
+  document.getElementById('id').value='';document.getElementById('pw').value='';document.getElementById('er').textContent='';
+}
+
+function goTab(t){
+  if(t==='more'){ openMore(); return; }
+  if(t===curTab)return;
+  prevTab=t;
+  document.querySelectorAll('.ft').forEach(el=>el.classList.toggle('a',el.dataset.t===t));
+  document.querySelectorAll('.fm-panel').forEach(p=>p.classList.remove('active'));
+  const target=document.getElementById('pan-'+t);
+  if(target)target.classList.add('active');
+  curTab=t;
+}
+
+function openMore(){
+  const ms=document.getElementById('more-screen');
+  ms.classList.add('open');
+  history.pushState({page:'more'},'','#more');
+  document.querySelectorAll('.ft').forEach(el=>el.classList.toggle('a',el.dataset.t==='more'));
+}
+function closeMore(){ if(document.getElementById('more-screen').classList.contains('open')) history.back(); }
+
+function openAppInfo(){
+  const ai=document.getElementById('appinfo-screen');
+  ai.classList.add('open');
+  history.pushState({page:'appinfo'},'','#appinfo');
+}
+function closeAppInfo(){ if(document.getElementById('appinfo-screen').classList.contains('open')) history.back(); }
+
+// 이동 기록 창 열기
+let histMode = 'all';
+function openHistory(mode) {
+    histMode = mode;
+    document.getElementById('history-screen').classList.add('open');
+    history.pushState({page:'history'}, '', '#history');
+    if(!document.getElementById('hist-date-input').value) {
+        const today = new Date();
+        const y = today.getFullYear(), m = String(today.getMonth() + 1).padStart(2, '0'), d = String(today.getDate()).padStart(2, '0');
+        document.getElementById('hist-date-input').value = `${y}-${m}-${d}`;
+    }
+    loadHistoryMap();
+}
+function closeHistory() { if(document.getElementById('history-screen').classList.contains('open')) history.back(); }
+
+function changeHistDate(delta) {
+    const el = document.getElementById('hist-date-input');
+    const d = new Date(el.value);
+    d.setDate(d.getDate() + delta);
+    el.value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    loadHistoryMap();
+}
+
+function loadHistoryMap() {
+    const dateVal = document.getElementById('hist-date-input').value;
+    document.getElementById('hist-info').textContent = '로딩 중...';
+    document.getElementById('hist-iframe').src = A + `/history_map?username=${centerTargetUser}&date=${dateVal}&mode=${histMode}`;
+}
+
+window.addEventListener('popstate', (e) => {
+  const ms=document.getElementById('more-screen'); if(ms.classList.contains('open')) ms.classList.remove('open');
+  const ai=document.getElementById('appinfo-screen'); if(ai.classList.contains('open')) ai.classList.remove('open');
+  const hs=document.getElementById('history-screen'); if(hs.classList.contains('open')) hs.classList.remove('open');
+  document.querySelectorAll('.ft').forEach(el=>el.classList.toggle('a',el.dataset.t===prevTab));
+});
+
+function initSheet(){
+  const ha=document.getElementById('fhandle');
+  const fm=document.getElementById('fmodal');
+  const fc=document.getElementById('fcontent');
+  if(!ha||!fm||!fc)return;
+  const TAB_H=68; const HANDLE_H=27; 
+  let startY=0,startH=0,dragging=false,curH=0;
+
+  function getHeights(){
+    const avail=window.innerHeight-30-TAB_H-HANDLE_H;
+    return {collapsed:0,default:Math.min(280,avail*0.45),expanded:Math.floor(avail*0.75)};
+  }
+
+  function applyState(idx){
+    const h=getHeights();
+    const vals=[h.collapsed,h.default,h.expanded];
+    curH=vals[idx];
+    fm.style.transition='height .35s cubic-bezier(.4,0,.2,1)';
+    fm.style.height=(curH+TAB_H+HANDLE_H)+'px';
+    fc.style.height=curH+'px';
+  }
+
+  function onDown(e){
+    dragging=true; startY=e.type.includes('touch')?e.touches[0].clientY:e.clientY; startH=curH;
+    fm.style.transition='none';fc.style.transition='none';
+  }
+  function onMove(e){
+    if(!dragging)return; e.preventDefault();
+    const y=e.type.includes('touch')?e.touches[0].clientY:e.clientY;
+    const delta=startY-y; const h=getHeights();
+    curH=Math.max(h.collapsed,Math.min(startH+delta,h.expanded));
+    fc.style.height=curH+'px'; fm.style.height=(curH+TAB_H+HANDLE_H)+'px';
+  }
+  function onUp(){
+    if(!dragging)return; dragging=false;
+    fm.style.transition='height .35s cubic-bezier(.4,0,.2,1)';
+    const h=getHeights();
+    const d=[Math.abs(curH-h.collapsed),Math.abs(curH-h.default),Math.abs(curH-h.expanded)];
+    applyState(d.indexOf(Math.min(...d)));
+  }
+
+  ha.addEventListener('touchstart',onDown,{passive:false}); ha.addEventListener('mousedown',onDown);
+  document.addEventListener('touchmove',onMove,{passive:false}); document.addEventListener('mousemove',onMove);
+  document.addEventListener('touchend',onUp); document.addEventListener('mouseup',onUp);
+  applyState(1);
+}
+
+function lM(){document.getElementById('mf').src=A+'/map';}
+
+function uM(){
+  const f=document.getElementById('mf');
+  if(!f.contentWindow)return;
+  let list=[...fm].map(m => { m.last_updated = m.updated_at || m.last_updated; return m; });
+  if(myLat!==null&&myLon!==null&&me){
+    const selfIdx=list.findIndex(m=>m.username===me.username);
+    const selfData={username:me.username,name:me.name||'나',role:me.role,lat:myLat,lon:myLon,last_updated:Math.floor(Date.now()/1000),updated_at:Math.floor(Date.now()/1000)};
+    if(selfIdx>=0)list[selfIdx]=selfData; else list=[selfData,...list];
+  }
+  
+  if (!randChildPicked && list.length > 0) {
+      const children = list.filter(m => m.role === 'child' && m.lat && m.lon);
+      if (children.length > 0) {
+          centerTargetUser = children[Math.floor(Math.random() * children.length)].username;
+          randChildPicked = true;
+      }
+  }
+
+  f.contentWindow.postMessage({
+      type:'UPDATE_MARKERS',
+      familyList:list,
+      centerUsername: centerTargetUser || (me ? me.username : null),
+      forceCenter: true
+  },'*');
+}
+
+async function getAddressFromCoords(lat, lon, elId) {
+    const el = document.getElementById(elId);
+    el.textContent = '주소를 불러오는 중...';
+    try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+        const d = await r.json();
+        if (d && d.display_name) el.textContent = d.display_name;
+        else el.textContent = '주소를 찾을 수 없습니다.';
+    } catch(e) { el.textContent = '주소 로딩 오류'; }
+}
+
+function showProfile(uname) {
+    const m = fm.find(x => x.username === uname) || (me && me.username === uname ? {username:me.username, name:me.name, role:me.role, lat:myLat, lon:myLon, updated_at:Math.floor(Date.now()/1000)} : null);
+    if(!m) return;
+    
+    centerTargetUser = uname;
+    uM();
+    
+    document.querySelectorAll('.ft').forEach(el=>el.classList.remove('a'));
+    document.querySelectorAll('.fm-panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('pan-profile').classList.add('active');
+    curTab = 'profile';
+
+    document.getElementById('prof-name').textContent = m.name || uname;
+    const up = m.updated_at || m.last_updated || 0;
+    if (up) {
+        const d = new Date(up * 1000);
+        const ampm = d.getHours() >= 12 ? '오후' : '오전';
+        const h = d.getHours() % 12 || 12;
+        const min = d.getMinutes().toString().padStart(2, '0');
+        document.getElementById('prof-time').textContent = `${d.getFullYear()}.${(d.getMonth()+1).toString().padStart(2,'0')}.${d.getDate().toString().padStart(2,'0')} ${ampm} ${h}:${min}`;
+    } else {
+        document.getElementById('prof-time').textContent = '기록 없음';
+    }
+    
+    if (m.lat && m.lon) {
+        document.getElementById('prof-coords').textContent = `좌표: ${m.lat.toFixed(6)}, ${m.lon.toFixed(6)}`;
+        getAddressFromCoords(m.lat, m.lon, 'prof-addr');
+    } else {
+        document.getElementById('prof-coords').textContent = '좌표: -';
+        document.getElementById('prof-addr').textContent = '-';
+    }
+    
+    document.getElementById('prof-go').onclick = () => {
+        centerTargetUser = uname;
+        uM();
+    };
+}
+function goBackFromProfile() { goTab(prevTab || 'home'); }
+
+async function sG(){const w=document.getElementById('code-wrap');const e=document.getElementById('code-exp');if(!w||!e)return;w.style.maxHeight='380px';e.innerHTML='<div class="spn" style="border-top-color:var(--blue); width:24px; height:24px; margin-bottom:8px;"></div><div class="cno">생성 중...</div>';try{const r=await fetch(A+'/api/parent/generate_code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me.username})});const d=await r.json();if(d.code)e.innerHTML=`<div class="cnm" style="font-size:28px;">${d.code}</div><img src="${d.qr_url}" style="width:140px; height:140px; border-radius:12px; margin-top:10px;"><div class="cno" style="margin-top:10px;">자녀 폰으로 QR을 스캔하세요 (5분 후 만료)</div>`;else e.innerHTML='<div class="em">생성 실패</div>';}catch{e.innerHTML='<div class="em">오류</div>';}}
+function openChildCode() { const w=document.getElementById('child-code-wrap'); if(w) w.style.maxHeight='180px'; }
+function closeChildCode() { const w=document.getElementById('child-code-wrap'); if(w) w.style.maxHeight='60px'; }
+async function sCChild(){const code=document.getElementById('ci-child').value.trim();if(code.length!==6){toast('6자리를 입력하세요.');return;} sCChildWithCode(code); }
+async function sCChildWithCode(code){
+    try{const r=await fetch(A+'/api/child/pair',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:me.username,code})});const d=await r.json();if(d.status==='paired'){toast('연결되었습니다!');lF();const w=document.getElementById('child-code-wrap');if(w)w.style.maxHeight='60px';}else toast(d.error||'유효하지 않은 코드');}catch{toast('네트워크 오류');}
+}
+function cC(){document.getElementById('cm').classList.add('hidden');}
+function toast(m){const t=document.getElementById('to');t.textContent=m;t.classList.add('sh');setTimeout(()=>t.classList.remove('sh'),2500);}
+</script>
+</body>
+</html>
