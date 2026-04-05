@@ -145,6 +145,7 @@ body{font-family:'Google Sans',-apple-system,BlinkMacSystemFont,'Malgun Gothic',
 .hist-btn{width:44px;height:44px;border:none;background:var(--card);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .hist-btn svg{width:24px;height:24px;color:var(--text)}
 #hist-date-input{border:none;font-size:18px;font-weight:700;outline:none;background:transparent;text-align:center;font-family:inherit;}
+#hist-info{text-align:center;font-size:14px;color:var(--sub);margin-top:6px;margin-bottom:6px;font-weight:500;min-height:20px}
 
 #cm{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100000;display:flex;align-items:flex-end;justify-content:center}
 #cm .cb{background:#fff;width:100%;border-radius:22px 22px 0 0;padding:22px 22px 40px;padding-bottom:calc(40px + env(safe-area-inset-bottom,0px));animation:sU .3s cubic-bezier(.4,0,.2,1)}
@@ -242,8 +243,7 @@ body{font-family:'Google Sans',-apple-system,BlinkMacSystemFont,'Malgun Gothic',
             </div>
             <button id="prof-go" class="cg" style="height:52px;font-size:17px;margin-top:0;">위치로 이동</button>
             <div style="display:flex;gap:8px;margin-top:10px;">
-                <button class="cg" style="flex:1;background:#E8F0FE;color:var(--blue);height:52px;font-size:16px;margin-top:0;" onclick="openHistory('all')">전체 경로</button>
-                <button class="cg" style="flex:1;background:#E8F0FE;color:var(--blue);height:52px;font-size:16px;margin-top:0;" onclick="openHistory('auto')">자동 감지 경로</button>
+                <button class="cg" style="flex:1;background:#E8F0FE;color:var(--blue);height:52px;font-size:16px;margin-top:0;width:100%;" onclick="openHistory('all')">전체 경로</button>
             </div>
         </div>
       </div>
@@ -290,6 +290,7 @@ body{font-family:'Google Sans',-apple-system,BlinkMacSystemFont,'Malgun Gothic',
     </div>
     
     <div class="hist-bottom">
+        <div id="hist-info">경로를 선택하면 시간이 표시됩니다.</div>
         <div style="padding: 0 4px 14px;">
             <input type="range" id="hist-slider" min="0" max="100" value="0" style="width:100%; accent-color:var(--blue);" oninput="onHistSliderMove()">
         </div>
@@ -321,6 +322,11 @@ if(scanCode) sessionStorage.setItem('pending_pair_code', scanCode);
 window.addEventListener('message', e => {
   if (e.data) {
       if (e.data.type === 'MAP_LOADED') uM();
+      if (e.data.type === 'HIST_INFO') {
+          const hi = document.getElementById('hist-info');
+          hi.textContent = e.data.text;
+          hi.style.color = e.data.color || 'var(--text)';
+      }
   }
 });
 
@@ -449,9 +455,7 @@ function openAppInfo(){
 }
 function closeAppInfo(){ const ai=document.getElementById('appinfo-screen'); if(ai && ai.classList.contains('open')) history.back(); }
 
-let histMode = 'all';
-function openHistory(mode) {
-    histMode = mode;
+function openHistory() {
     document.getElementById('history-screen').classList.add('open');
     history.pushState({page:'history'}, '', '#history');
     if(!document.getElementById('hist-date-input').value) {
@@ -481,7 +485,7 @@ function loadHistoryMap() {
     container.innerHTML = ''; 
     const newIframe = document.createElement('iframe');
     newIframe.id = 'hist-iframe';
-    newIframe.src = A + `/history_map?username=${centerTargetUser}&date=${dateVal}&mode=${histMode}`;
+    newIframe.src = A + `/history_map?username=${centerTargetUser}&date=${dateVal}`;
     container.appendChild(newIframe);
 }
 
@@ -491,7 +495,7 @@ function onHistSliderMove() {
     var iframe = document.getElementById('hist-iframe');
     if(iframe && iframe.contentWindow) {
         var uName = document.getElementById('prof-name').textContent || centerTargetUser;
-        iframe.contentWindow.postMessage({type: 'SLIDER', val: val, name: uName + ' (나)'}, '*');
+        iframe.contentWindow.postMessage({type: 'SLIDER', val: val, name: uName}, '*');
     }
 }
 
